@@ -1,5 +1,6 @@
 const { initializeApp } = require( "firebase/app");
 const {getAuth , createUserWithEmailAndPassword} = require("firebase/auth");
+const {Pool} = require("pg");
 
 const firebaseConfig = {
   apiKey: "AIzaSyDXOoP1929e0fymcGm7Idt6CwtlUHT8Tso",

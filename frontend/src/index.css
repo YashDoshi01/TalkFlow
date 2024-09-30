@@ -107,6 +107,9 @@
     margin-left: 13rem;
     font-size: 18px;
 }
+.loginText:hover{
+    cursor: pointer;
+}
 .color{
     color: #EEEEEE;
     
