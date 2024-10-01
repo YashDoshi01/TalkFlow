@@ -1,5 +1,6 @@
 const { initializeApp } = require( "firebase/app");
 const {getAuth , createUserWithEmailAndPassword} = require("firebase/auth");
+const admin = require("firebase-admin");
 const {Pool} = require("pg");
 
 const firebaseConfig = {
@@ -17,21 +18,32 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 const newAuth = getAuth();
+admin.initializeApp({
+  credential: admin.credential.applicationDefault(),
+});
 
 
 function signup (req , res){
   const { email, password } = req.body;
 
-    createUserWithEmailAndPassword(newAuth, email, password)
+   
+  createUserWithEmailAndPassword(newAuth, email, password)
   .then((userCredential) => {
     
     const user = userCredential.user;
     res.json(user);
   })
   .catch((error) => {
-    // const errorCode = error.code;
-    const errorMessage = error.message;
-    res.json("error");
+    if (error.code === 'auth/email-already-in-use') {
+      res.status(500).json({error : "already"});
+    } else {
+      res.status(400).json({error : "error"});;
+    }
+    
   });
-}
+    }
+    
+
+    
+
 module.exports = {signup};

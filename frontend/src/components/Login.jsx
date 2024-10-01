@@ -60,7 +60,7 @@ function Form({handleLogin , email , setEmail , password  , setPassword , naviga
     
     return (
         <div className="registerForm">
-            <h1 className="head">Create Account </h1>
+            <h1 className="head">Login </h1>
             <form className="formR" onSubmit={(e) => {
                 handleLogin(e)}}>
                 

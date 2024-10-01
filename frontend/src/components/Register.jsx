@@ -8,9 +8,13 @@ import { useNavigate } from 'react-router-dom';
 
 
 function Register(){
+  
   const navigate = useNavigate();
     const [password,setPassword] = useState("");
     const [email,setEmail] = useState("");
+    const [pass , setPass] = useState(true);
+    const [already , setAlready] = useState(true);
+    
       const handleUserSignup = async (e) => {
         e.preventDefault();
     
@@ -29,7 +33,14 @@ function Register(){
         console.log("User created:", data);
         navigate("/");
       } else {
-        console.error("Error creating user:", response.error);
+        
+        // console.error("Error creating user:", response.error);
+        if(data.error === "error")
+           setPass(false);
+        if(data.error === "already")
+          setAlready(false);
+        // console.log(data.error)
+
       }
     } catch (error) {
       console.error("Error:", error);
@@ -39,7 +50,7 @@ function Register(){
     return(
         <div className="registerContainer">
             <Logo/>
-            <Form handleSignUp = {handleUserSignup} email={email} setEmail={setEmail} password={password} setPassword={setPassword} navigate={navigate}/>
+            <Form handleSignUp = {handleUserSignup} email={email} setEmail={setEmail} password={password} setPassword={setPassword} navigate={navigate} pass= {pass} already = {already}/>
         </div>
     );
 }
@@ -56,7 +67,7 @@ function Logo(){
         </div>
     );
 }
-function Form({handleSignUp , email , setEmail , password  , setPassword , navigate}){
+function Form({handleSignUp , email , setEmail , password  , setPassword , navigate ,pass , already}){
 
     
     const [name,setName] = useState("");
@@ -67,7 +78,9 @@ function Form({handleSignUp , email , setEmail , password  , setPassword , navig
                 handleSignUp(e)}}>
                 <input type="text" className="textInput" placeholder="Username" value={name} onChange={(e) => setName(e.target.value)}/>
                 <input type="text" className="textInput" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                {(!already) && <p className='password'>email already in use</p>}
                 <input type="text" className="textInput" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+                {(!pass) && <p className='password'>password must be atleast 6 letters</p>}
                 <input type="file" className="fileInput" id = "file" style={{display : "none"}}/>
                 <label htmlFor="file" className="color fileInput">
                 <svg className="w-6 h-6 text-gray-800  dark:text-white color" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
@@ -91,6 +104,8 @@ Form.propTypes = {
     password: PropTypes.string.isRequired,
     setPassword: PropTypes.func.isRequired,
     navigate: PropTypes.func.isRequired,
+    pass:PropTypes.bool.isRequired,
+    already:PropTypes.bool.isRequired,
 
 };
 export default Register;
