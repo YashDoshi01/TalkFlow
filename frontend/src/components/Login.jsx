@@ -21,7 +21,11 @@ function Login(){
       });
 
       const data = await response.json();
-
+      if(data === "notlogged")
+      {
+        
+        navigate("/login");
+      }
       if (response.ok) {
         console.log("User Loggedin:", data);
         navigate("/");
