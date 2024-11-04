@@ -5,7 +5,7 @@ const admin = require("firebase-admin");
 const {pool} = require("../database/db");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-
+let loggedin = false;
 const firebaseConfig = {
   apiKey: "AIzaSyDXOoP1929e0fymcGm7Idt6CwtlUHT8Tso",
   authDomain: "talk-flow-58f4d.firebaseapp.com",
@@ -69,11 +69,15 @@ function createToken(id)
   .then((userCredential) => {
     // Signed in 
     const user = userCredential.user;
-    res.cookie('token' , createToken(user.uid), { maxAge: 900000, httpOnly: true });
-    res.json(user);
+    const newtoken = createToken(user.uid);
+    // localStorage.setItem('token' , newtoken);
+    // res.cookie('loggedin' ,true, { maxAge: 900000, httpOnly: true });
+    console.log(newtoken);
+    res.json({user,newtoken});
     // ...
   })
   .catch((error) => {
+    res.cookie('loggedin' ,false, { maxAge: 900000, httpOnly: true });
     const errorCode = error.code;
     const errorMessage = error.message;
     if(errorCode === "auth/invalid-credential")
@@ -81,24 +85,25 @@ function createToken(id)
   });
   }
     
-  function requireAuth(req , res , next)
-  {
-    const token = req.cookies.token;
-    if(token)
-    {
-      jwt.verify(token,'secretbro',(err , decodedtoken)=>{
-        if(err)
-          res.json("notlogged");
-        else{
-          console.log(decodedtoken);
-          next();
+  function checkLogin(req, res) {
+    const token = req.body.token;
+  
+    if (token) {
+      // Token exists, attempt to verify
+      jwt.verify(token, 'secretbro', (err, decodedToken) => {
+        if (err) {
+          // Send the error as a JSON response
+          res.json({ error: 'Token verification failed', details: err });
+        } else {
+          // Token is valid, send a success message
+          res.json({ message: 'Logged in', user: decodedToken });
         }
       });
-    }
-    else{
-      res.json("notlogged");
+    } else {
+      // No token found, send an appropriate response
+      res.json({ error: 'No token provided' });
     }
   }
     
 
-module.exports = {signup , login , requireAuth};
+module.exports = {signup , login , checkLogin};

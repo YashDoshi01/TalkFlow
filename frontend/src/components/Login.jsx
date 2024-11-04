@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 
 
 
-function Login(){
+function Login({handleLoggedin}){
   const navigate = useNavigate();
     const [password,setPassword] = useState("");
     const [email,setEmail] = useState("");
+
+    
       const handleUserLogin = async (e) => {
         e.preventDefault();
     
@@ -21,14 +23,16 @@ function Login(){
       });
 
       const data = await response.json();
-      if(data === "notlogged")
-      {
+      // if(data === "notlogged")
+      // {
         
-        navigate("/login");
-      }
+      //   navigate("/login");
+      // }
       if (response.ok) {
         console.log("User Loggedin:", data);
-        navigate("/");
+        localStorage.setItem('token' , data.newtoken);
+        handleLoggedin(true);
+        navigate("/chats");
       } else {
         console.error("Error logging in the  user:", response.error);
       }
@@ -93,6 +97,10 @@ Form.propTypes = {
     password: PropTypes.string.isRequired,
     setPassword: PropTypes.func.isRequired,
     navigate: PropTypes.func.isRequired,
+    
 
 };
+Login.propTypes={
+  handleLoggedin: PropTypes.func.isRequired,
+}
 export default Login;
